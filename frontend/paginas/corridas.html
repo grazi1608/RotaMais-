@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RotaMais - CRUD de Corridas</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="../index.html" class="navbar-logo">RotaMais</a>
+            <a href="motoristas.html" class="navbar-link">Motoristas</a>
+            <a href="veiculos.html" class="navbar-link">Veículos</a>
+            <a href="corridas.html" class="navbar-link ativo">Corridas</a>
+            <a href="meta.html" class="navbar-link">Metas</a>
+            <a href="relatorios.html" class="navbar-link">Relatórios</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="cabecalho">
+            <p class="tag">RotaMais - Sistema de Gestão</p>
+            <h1>Gerenciamento de Corridas</h1>
+            <p>Frontend simples consumindo a API Flask do RotaMais.</p>
+        </header>
+
+        <section class="card">
+            <h2 id="titulo-formulario">Registrar nova corrida</h2>
+
+            <form id="form-corrida">
+                <input type="hidden" id="corrida-id">
+
+                <label for="valor">Valor Total Ganho (R$)</label>
+                <input type="number" id="valor" step="0.01" placeholder="Ex.: 45.50" required>
+
+                <label for="distancia">Distância Percorrida (km)</label>
+                <input type="number" id="distancia" step="0.1" placeholder="Ex.: 14.5" required>
+
+                <label for="motorista_id">Motorista</label>
+                <select id="motorista_id" required style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 1rem; background: white;">
+                    <option value="">Selecione um motorista...</option>
+                </select>
+
+                <label for="veiculo_id">Veículo</label>
+                <select id="veiculo_id" required style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 1rem; background: white;">
+                    <option value="">Selecione um veículo...</option>
+                </select>
+
+                <p style="font-size: 0.85rem; color: #64748b;">O custo estimado e o lucro são calculados automaticamente a partir do consumo do veículo.</p>
+
+                <div class="acoes-formulario">
+                    <button type="submit" id="botao-salvar">Salvar Corrida</button>
+                    <button type="button" id="botao-cancelar" class="secundario">Cancelar edição</button>
+                </div>
+            </form>
+
+            <p id="mensagem" class="mensagem"></p>
+        </section>
+
+        <section class="card">
+            <div class="topo-lista">
+                <h2>Histórico de Corridas</h2>
+                <button id="botao-recarregar" class="secundario">Recarregar</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data/Hora</th>
+                        <th>Valor</th>
+                        <th>Custo</th>
+                        <th>Lucro</th>
+                        <th>Distância</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-corridas">
+                    <tr>
+                        <td colspan="7">Carregando histórico...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="../js/corridas.js"></script>
+</body>
+</html>

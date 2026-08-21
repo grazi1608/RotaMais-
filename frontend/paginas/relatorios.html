@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RotaMais - Relatório de Lucro</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="../index.html" class="navbar-logo">RotaMais</a>
+            <a href="motoristas.html" class="navbar-link">Motoristas</a>
+            <a href="veiculos.html" class="navbar-link">Veículos</a>
+            <a href="corridas.html" class="navbar-link">Corridas</a>
+            <a href="meta.html" class="navbar-link">Metas</a>
+            <a href="relatorios.html" class="navbar-link ativo">Relatórios</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="cabecalho">
+            <p class="tag">RotaMais - Sistema de Gestão</p>
+            <h1>Relatório de Lucro por Motorista</h1>
+            <p>Consolidado de corridas, faturamento, custo e lucro de cada motorista.</p>
+        </header>
+
+        <section class="card">
+            <div class="topo-lista">
+                <h2>Lucro por motorista</h2>
+                <button id="botao-recarregar" class="secundario">Recarregar</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Motorista</th>
+                        <th>Corridas</th>
+                        <th>Faturado</th>
+                        <th>Custo</th>
+                        <th>Lucro</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-relatorio">
+                    <tr>
+                        <td colspan="5">Carregando relatório...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="../js/relatorios.js"></script>
+</body>
+</html>

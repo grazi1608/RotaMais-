@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RotaMais</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="index.html" class="navbar-logo">RotaMais</a>
+            <a href="paginas/motoristas.html" class="navbar-link">Motoristas</a>
+            <a href="paginas/veiculos.html" class="navbar-link">Veículos</a>
+            <a href="paginas/corridas.html" class="navbar-link">Corridas</a>
+            <a href="paginas/meta.html" class="navbar-link">Metas</a>
+            <a href="paginas/relatorios.html" class="navbar-link">Relatórios</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="cabecalho">
+            <p class="tag">RotaMais - Sistema de Gestão</p>
+            <h1>Controle financeiro para motoristas de app</h1>
+            <p>Frontend estático (HTML/CSS/JS) consumindo a API Flask do RotaMais via flask-cors.</p>
+        </header>
+
+        <section class="card">
+            <h2>O que você quer gerenciar?</h2>
+            <div class="acoes-formulario" style="justify-content: flex-start;">
+                <a href="paginas/motoristas.html"><button type="button">Motoristas</button></a>
+                <a href="paginas/veiculos.html"><button type="button">Veículos</button></a>
+                <a href="paginas/corridas.html"><button type="button">Corridas</button></a>
+                <a href="paginas/meta.html"><button type="button">Metas</button></a>
+                <a href="paginas/relatorios.html"><button type="button">Relatórios</button></a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
