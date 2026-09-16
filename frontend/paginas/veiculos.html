@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RotaMais - CRUD de Veículos</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <img src="images/Logo.png" alt="logotipo" class="logo-foto">
+            <a href="../index.html" class="navbar-logo">Rota<span class="mais">+</span></a>
+            <a href="motoristas.html" class="navbar-link">Motoristas</a>
+            <a href="veiculos.html" class="navbar-link ativo">Veículos</a>
+            <a href="corridas.html" class="navbar-link">Corridas</a>
+            <a href="gastos.html" class="navbar-link">Gastos</a>
+            <a href="meta.html" class="navbar-link">Metas</a>
+            <a href="cofrinho.html" class="navbar-link">Cofrinho</a>
+            <a href="relatorios.html" class="navbar-link">Relatórios</a>
+            <div class="navbar-spacer"></div>
+            <button id="botao-sair" class="navbar-sair">Sair</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="cabecalho">
+            <p class="tag">RotaMais - Sistema de Gestão</p>
+            <h1>Gerenciamento de Veículos</h1>
+            <p>Frontend simples consumindo a API Flask do RotaMais.</p>
+        </header>
+
+        <section class="card">
+            <h2 id="titulo-formulario">Cadastrar veículo</h2>
+
+            <form id="form-veiculo">
+                <input type="hidden" id="veiculo-id">
+
+                <label for="modelo">Modelo</label>
+                <input type="text" id="modelo" placeholder="Ex.: Volkswagen Gol" required>
+
+                <label for="placa">Placa</label>
+                <input type="text" id="placa" placeholder="Ex.: ABC1D23" required>
+
+                <label for="consumo_por_km">Consumo (custo por km rodado, em R$)</label>
+                <input type="number" id="consumo_por_km" step="0.01" placeholder="Ex.: 0.35" required>
+
+                <label for="motorista_id">Motorista Responsável</label>
+                <select id="motorista_id" required style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 1rem; background: white;">
+                    <option value="">Selecione um motorista...</option>
+                </select>
+
+                <div class="acoes-formulario">
+                    <button type="submit" id="botao-salvar">Salvar</button>
+                    <button type="button" id="botao-cancelar" class="secundario">Cancelar edição</button>
+                </div>
+            </form>
+
+            <p id="mensagem" class="mensagem"></p>
+        </section>
+
+        <section class="card">
+            <div class="topo-lista">
+                <h2>Veículos cadastrados</h2>
+                <button id="botao-recarregar" class="secundario">Recarregar</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modelo</th>
+                        <th>Placa</th>
+                        <th>Consumo (R$/km)</th>
+                        <th>Motorista</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-veiculos">
+                    <tr>
+                        <td colspan="6">Carregando veículos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/veiculos.js"></script>
+</body>
+</html>

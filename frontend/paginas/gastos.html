@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RotaMais - Gastos</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <img src="images/Logo.png" alt="logotipo" class="logo-foto">
+            <a href="../index.html" class="navbar-logo">Rota<span class="mais">+</span></a>
+            <a href="motoristas.html" class="navbar-link">Motoristas</a>
+            <a href="veiculos.html" class="navbar-link">Veículos</a>
+            <a href="corridas.html" class="navbar-link">Corridas</a>
+            <a href="gastos.html" class="navbar-link ativo">Gastos</a>
+            <a href="meta.html" class="navbar-link">Metas</a>
+            <a href="cofrinho.html" class="navbar-link">Cofrinho</a>
+            <a href="relatorios.html" class="navbar-link">Relatórios</a>
+            <div class="navbar-spacer"></div>
+            <button id="botao-sair" class="navbar-sair">Sair</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="cabecalho">
+            <p class="tag">RotaMais - Sistema de Gestão</p>
+            <h1>Meus Gastos</h1>
+            <p>Registre combustível, manutenção e outros gastos para acompanhar seu lucro real.</p>
+        </header>
+
+        <section class="card">
+            <h2 id="titulo-formulario">Registrar novo gasto</h2>
+            <form id="form-gasto">
+                <input type="hidden" id="gasto-id">
+
+                <label for="tipo">Tipo</label>
+                <select id="tipo" required>
+                    <option value="combustivel">Combustível</option>
+                    <option value="manutencao">Manutenção</option>
+                    <option value="outro">Outro</option>
+                </select>
+
+                <label for="valor">Valor (R$)</label>
+                <input type="number" id="valor" step="0.01" placeholder="Ex.: 80.00" required>
+
+                <label for="descricao">Descrição (opcional)</label>
+                <input type="text" id="descricao" placeholder="Ex.: Troca de óleo">
+
+                <label for="veiculo_id">Veículo (opcional)</label>
+                <select id="veiculo_id">
+                    <option value="">Nenhum veículo específico</option>
+                </select>
+
+                <div class="acoes-formulario">
+                    <button type="submit" id="botao-salvar">Salvar Gasto</button>
+                    <button type="button" id="botao-cancelar" class="secundario">Cancelar edição</button>
+                </div>
+            </form>
+            <p id="mensagem" class="mensagem"></p>
+        </section>
+
+        <section class="card">
+            <div class="topo-lista">
+                <h2>Histórico de gastos</h2>
+                <button id="botao-recarregar" class="secundario">Recarregar</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-gastos">
+                    <tr>
+                        <td colspan="5">Carregando gastos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/gastos.js"></script>
+</body>
+</html>

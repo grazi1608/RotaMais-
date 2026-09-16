@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RotaMais - Cofrinho</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <img src="images/Logo.png" alt="logotipo" class="logo-foto">
+            <a href="../index.html" class="navbar-logo">Rota<span class="mais">+</span></a>
+            <a href="motoristas.html" class="navbar-link">Motoristas</a>
+            <a href="veiculos.html" class="navbar-link">Veículos</a>
+            <a href="corridas.html" class="navbar-link">Corridas</a>
+            <a href="gastos.html" class="navbar-link">Gastos</a>
+            <a href="meta.html" class="navbar-link">Metas</a>
+            <a href="cofrinho.html" class="navbar-link ativo">Cofrinho</a>
+            <a href="relatorios.html" class="navbar-link">Relatórios</a>
+            <div class="navbar-spacer"></div>
+            <button id="botao-sair" class="navbar-sair">Sair</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="cabecalho">
+            <p class="tag">RotaMais - Sistema de Gestão</p>
+            <h1>Cofrinho</h1>
+            <p>Guarde dinheiro aos poucos para seus objetivos (troca de pneus, IPVA, manutenção...).</p>
+        </header>
+
+        <section class="card card-escuro">
+            <p style="margin: 0; opacity: 0.8;">Total guardado</p>
+            <h1 id="total-guardado" style="font-size: 2.2rem; margin: 4px 0 0;">R$ 0,00</h1>
+        </section>
+
+        <section class="card">
+            <h2 id="titulo-formulario">Novo objetivo</h2>
+            <form id="form-objetivo">
+                <input type="hidden" id="objetivo-id">
+
+                <label for="nome">Nome do objetivo</label>
+                <input type="text" id="nome" placeholder="Ex.: Trocar pneus" required>
+
+                <label for="valor_meta">Valor da meta (R$)</label>
+                <input type="number" id="valor_meta" step="0.01" placeholder="Ex.: 2000.00" required>
+
+                <div class="acoes-formulario">
+                    <button type="submit" id="botao-salvar">Salvar objetivo</button>
+                    <button type="button" id="botao-cancelar" class="secundario">Cancelar edição</button>
+                </div>
+            </form>
+            <p id="mensagem" class="mensagem"></p>
+        </section>
+
+        <section class="card">
+            <div class="topo-lista">
+                <h2>Meus objetivos</h2>
+                <button id="botao-recarregar" class="secundario">Recarregar</button>
+            </div>
+            <div id="lista-objetivos">Carregando objetivos...</div>
+        </section>
+    </main>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/cofrinho.js"></script>
+</body>
+</html>
