@@ -9,6 +9,7 @@ from services.Corrida import (
     AtualizarCorrida,
     ExcluirCorrida,
 )
+from utils.auth import login_required
 
 corrida_bp = Blueprint("corrida", __name__)
 
@@ -23,6 +24,8 @@ def formatar_data_hora(data_hora_str):
 class CorridaController(MethodView):
     """Controller do recurso Corrida: recebe a requisição HTTP, interpreta
     os dados e delega a regra de negócio para o Service correspondente."""
+
+    decorators = [login_required]
 
     def get(self, id=None):
         if id is None:

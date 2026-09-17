@@ -1,3 +1,5 @@
+exigirLogin();
+
 const API_CORRIDAS = "http://127.0.0.1:5000/corridas";
 const API_MOTORISTAS = "http://127.0.0.1:5000/motoristas";
 const API_VEICULOS = "http://127.0.0.1:5000/veiculos";
@@ -32,7 +34,8 @@ function limparFormulario() {
 
 async function carregarMotoristas() {
     try {
-        const resposta = await fetch(API_MOTORISTAS);
+        const resposta = await fetch(API_MOTORISTAS, { headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         const motoristas = await resposta.json();
         selectMotorista.innerHTML = '<option value="">Selecione um motorista...</option>';
         motoristas.forEach(m => {
@@ -48,7 +51,8 @@ async function carregarMotoristas() {
 
 async function carregarVeiculos() {
     try {
-        const resposta = await fetch(API_VEICULOS);
+        const resposta = await fetch(API_VEICULOS, { headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         const veiculos = await resposta.json();
         selectVeiculo.innerHTML = '<option value="">Selecione um veículo...</option>';
         veiculos.forEach(v => {
@@ -64,7 +68,8 @@ async function carregarVeiculos() {
 
 async function listarCorridas() {
     try {
-        const resposta = await fetch(API_CORRIDAS);
+        const resposta = await fetch(API_CORRIDAS, { headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         const corridas = await resposta.json();
         tabelaCorridas.innerHTML = "";
 
@@ -123,9 +128,10 @@ async function salvarCorrida(e) {
     try {
         const resposta = await fetch(url, {
             method: metodo,
-            headers: { "Content-Type": "application/json" },
+            headers: headersAutenticados({ "Content-Type": "application/json" }),
             body: JSON.stringify(dados)
         });
+        if (await tratarNaoAutenticado(resposta)) return;
 
         if (!resposta.ok) {
             const erro = await resposta.json();
@@ -144,7 +150,8 @@ async function salvarCorrida(e) {
 async function deletarCorrida(id) {
     if (!confirm("Remover esta corrida do histórico?")) return;
     try {
-        const resposta = await fetch(`${API_CORRIDAS}/${id}`, { method: "DELETE" });
+        const resposta = await fetch(`${API_CORRIDAS}/${id}`, { method: "DELETE", headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         if (resposta.ok) {
             mostrarMensagem("Corrida excluída com sucesso.", "sucesso");
             listarCorridas();

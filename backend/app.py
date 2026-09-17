@@ -8,6 +8,9 @@ from controllers.veiculo_controller import veiculo_bp
 from controllers.corrida_controller import corrida_bp
 from controllers.meta_controller import meta_bp
 from controllers.relatorio_controller import relatorio_bp
+from controllers.auth_controller import auth_bp
+from controllers.gasto_controller import gasto_bp
+from controllers.cofrinho_controller import cofrinho_bp
 
 
 def create_app():
@@ -31,6 +34,9 @@ def create_app():
     app.register_blueprint(corrida_bp, url_prefix="/corridas")
     app.register_blueprint(meta_bp, url_prefix="/metas")
     app.register_blueprint(relatorio_bp, url_prefix="/relatorios")
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(gasto_bp, url_prefix="/gastos")
+    app.register_blueprint(cofrinho_bp, url_prefix="/cofrinho")
 
     @app.get("/")
     def home():
@@ -42,6 +48,9 @@ def create_app():
                 "corridas": "/corridas",
                 "metas": "/metas",
                 "relatorios": "/relatorios/lucro-por-motorista",
+                "auth": "/auth/registrar, /auth/login, /auth/logout, /auth/me",
+                "gastos": "/gastos",
+                "cofrinho": "/cofrinho",
             },
         })
 

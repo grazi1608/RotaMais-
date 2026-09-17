@@ -9,20 +9,25 @@
 <body>
     <nav class="navbar">
         <div class="navbar-inner">
-            <a href="index.html" class="navbar-logo">RotaMais</a>
+            <img src="paginas/images/Logo.png" alt="logotipo" class="logo-foto">
+            <a href="index.html" class="navbar-logo">Rota<span class="mais">+</span></a>
             <a href="paginas/motoristas.html" class="navbar-link">Motoristas</a>
             <a href="paginas/veiculos.html" class="navbar-link">Veículos</a>
             <a href="paginas/corridas.html" class="navbar-link">Corridas</a>
+            <a href="paginas/gastos.html" class="navbar-link">Gastos</a>
             <a href="paginas/meta.html" class="navbar-link">Metas</a>
+            <a href="paginas/cofrinho.html" class="navbar-link">Cofrinho</a>
             <a href="paginas/relatorios.html" class="navbar-link">Relatórios</a>
+            <div class="navbar-spacer"></div>
+            <button id="botao-sair" class="navbar-sair">Sair</button>
         </div>
     </nav>
 
     <main class="container">
         <header class="cabecalho">
             <p class="tag">RotaMais - Sistema de Gestão</p>
-            <h1>Controle financeiro para motoristas de app</h1>
-            <p>Frontend estático (HTML/CSS/JS) consumindo a API Flask do RotaMais via flask-cors.</p>
+            <h1 id="titulo-boas-vindas">Controle financeiro para motoristas de app</h1>
+            <p>Frontend estático (HTML/CSS/JS) consumindo a API Flask do RotaMais.</p>
         </header>
 
         <section class="card">
@@ -36,5 +41,8 @@
             </div>
         </section>
     </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>

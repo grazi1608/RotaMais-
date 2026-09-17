@@ -8,6 +8,7 @@ from services.Veiculo import (
     AtualizarVeiculo,
     ExcluirVeiculo,
 )
+from utils.auth import login_required
 
 veiculo_bp = Blueprint("veiculo", __name__)
 
@@ -15,6 +16,8 @@ veiculo_bp = Blueprint("veiculo", __name__)
 class VeiculoController(MethodView):
     """Controller do recurso Veículo: recebe a requisição HTTP, interpreta
     os dados e delega a regra de negócio para o Service correspondente."""
+
+    decorators = [login_required]
 
     def get(self, id=None):
         if id is None:

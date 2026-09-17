@@ -1,3 +1,5 @@
+exigirLogin();
+
 const API_URL = "http://127.0.0.1:5000/motoristas";
 
 const formMotorista = document.querySelector("#form-motorista");
@@ -64,7 +66,8 @@ function limparFormulario() {
 
 async function listarMotoristas() {
     try {
-        const resposta = await fetch(API_URL);
+        const resposta = await fetch(API_URL, { headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         const motoristas = await resposta.json();
 
         tabelaMotoristas.innerHTML = "";
@@ -131,11 +134,11 @@ async function salvarMotorista(evento) {
     try {
         const resposta = await fetch(url, {
             method: metodo,
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: headersAutenticados({ "Content-Type": "application/json" }),
             body: JSON.stringify(dados),
         });
+
+        if (await tratarNaoAutenticado(resposta)) return;
 
         if (!resposta.ok) {
             const erro = await resposta.json();
@@ -161,7 +164,10 @@ async function deletarMotorista(id) {
     try {
         const resposta = await fetch(`${API_URL}/${id}`, {
             method: "DELETE",
+            headers: headersAutenticados(),
         });
+
+        if (await tratarNaoAutenticado(resposta)) return;
 
         if (!resposta.ok) {
             const erro = await resposta.json();

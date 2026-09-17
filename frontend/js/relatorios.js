@@ -1,3 +1,5 @@
+exigirLogin();
+
 const API_RELATORIO_LUCRO = "http://127.0.0.1:5000/relatorios/lucro-por-motorista";
 
 const tabelaRelatorio = document.querySelector("#tabela-relatorio");
@@ -5,7 +7,8 @@ const botaoRecarregar = document.querySelector("#botao-recarregar");
 
 async function carregarRelatorio() {
     try {
-        const resposta = await fetch(API_RELATORIO_LUCRO);
+        const resposta = await fetch(API_RELATORIO_LUCRO, { headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         const linhas = await resposta.json();
 
         tabelaRelatorio.innerHTML = "";

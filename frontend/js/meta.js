@@ -1,3 +1,5 @@
+exigirLogin();
+
 const API_METAS = "http://127.0.0.1:5000/metas";
 const API_MOTORISTAS = "http://127.0.0.1:5000/motoristas";
 
@@ -31,7 +33,8 @@ function limparFormulario() {
 
 async function carregarMotoristas() {
     try {
-        const resposta = await fetch(API_MOTORISTAS);
+        const resposta = await fetch(API_MOTORISTAS, { headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         const motoristas = await resposta.json();
         selectMotorista.innerHTML = '<option value="">Selecione...</option>';
         motoristas.forEach(m => {
@@ -45,7 +48,8 @@ async function carregarMotoristas() {
 
 async function listarMetas() {
     try {
-        const resposta = await fetch(API_METAS);
+        const resposta = await fetch(API_METAS, { headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         const metas = await resposta.json();
         tabelaMetas.innerHTML = "";
 
@@ -106,9 +110,10 @@ async function salvarMeta(e) {
     try {
         const resposta = await fetch(url, {
             method: metodo,
-            headers: { "Content-Type": "application/json" },
+            headers: headersAutenticados({ "Content-Type": "application/json" }),
             body: JSON.stringify(dados)
         });
+        if (await tratarNaoAutenticado(resposta)) return;
 
         if (!resposta.ok) return;
 
@@ -121,7 +126,7 @@ async function salvarMeta(e) {
 async function deletarMeta(id) {
     if (!confirm("Excluir esta meta?")) return;
     try {
-        await fetch(`${API_METAS}/${id}`, { method: "DELETE" });
+        await fetch(`${API_METAS}/${id}`, { method: "DELETE", headers: headersAutenticados() });
         listarMetas();
     } catch (err) {}
 }

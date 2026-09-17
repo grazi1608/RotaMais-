@@ -1,3 +1,5 @@
+exigirLogin();
+
 const API_VEICULOS = "http://127.0.0.1:5000/veiculos";
 const API_MOTORISTAS = "http://127.0.0.1:5000/motoristas";
 
@@ -38,7 +40,8 @@ function limparFormulario() {
 
 async function carregarMotoristas() {
     try {
-        const resposta = await fetch(API_MOTORISTAS);
+        const resposta = await fetch(API_MOTORISTAS, { headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         const motoristas = await resposta.json();
         motoristasCache = motoristas;
 
@@ -57,7 +60,8 @@ async function carregarMotoristas() {
 
 async function listarVeiculos() {
     try {
-        const resposta = await fetch(API_VEICULOS);
+        const resposta = await fetch(API_VEICULOS, { headers: headersAutenticados() });
+        if (await tratarNaoAutenticado(resposta)) return;
         const veiculos = await resposta.json();
 
         tabelaVeiculos.innerHTML = "";
@@ -123,11 +127,10 @@ async function salvarVeiculo(evento) {
     try {
         const resposta = await fetch(url, {
             method: metodo,
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: headersAutenticados({ "Content-Type": "application/json" }),
             body: JSON.stringify(dados),
         });
+        if (await tratarNaoAutenticado(resposta)) return;
 
         if (!resposta.ok) {
             const erro = await resposta.json();
@@ -153,7 +156,9 @@ async function deletarVeiculo(id) {
     try {
         const resposta = await fetch(`${API_VEICULOS}/${id}`, {
             method: "DELETE",
+            headers: headersAutenticados(),
         });
+        if (await tratarNaoAutenticado(resposta)) return;
 
         if (!resposta.ok) {
             const erro = await resposta.json();

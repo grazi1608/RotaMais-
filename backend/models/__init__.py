@@ -7,6 +7,9 @@ from models.corrida import Corrida
 from models.meta import Meta
 from models.motorista import Motorista
 from models.veiculo import Veiculo
+from models.gasto import Gasto
+from models.objetivo_cofrinho import ObjetivoCofrinho
 from models.base import ModeloBase
+from models.cadastro import Cadastro
 
-__all__ = ["db", "Corrida", "Meta", "Motorista", "Veiculo", "ModeloBase"]
+__all__ = ["db", "Corrida", "Meta", "Motorista", "Veiculo", "Gasto", "ObjetivoCofrinho", "ModeloBase", "Cadastro"]
