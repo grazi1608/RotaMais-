@@ -28,10 +28,13 @@ async function entrar(evento) {
             body: JSON.stringify(dados),
         });
 
-        const corpo = await resposta.json();
+        const corpo = await lerJsonSeguro(resposta);
 
         if (!resposta.ok) {
-            mostrarMensagem(corpo.erro || "Não foi possível entrar.", "erro");
+            const padrao = resposta.status >= 500
+                ? "Erro interno no servidor. Veja o terminal do backend (provável banco de dados desatualizado)."
+                : "Não foi possível entrar.";
+            mostrarMensagem(corpo.erro || padrao, "erro");
             return;
         }
 

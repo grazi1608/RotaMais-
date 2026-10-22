@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 
@@ -14,12 +16,12 @@ from controllers.cofrinho_controller import cofrinho_bp
 
 
 def create_app():
-    # A API agora é 100% JSON. O frontend é estático (HTML/CSS/JS puro)
-    # e roda separado (outra origem/porta), por isso liberamos o CORS.
     app = Flask(__name__)
-    CORS(app)  # libera o acesso da API para o frontend estático (outra origem/porta)
+    CORS(app)
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///rotamais.db"
+    pasta_instance = os.path.join(os.path.abspath(os.path.dirname(__file__)), "instance")
+    os.makedirs(pasta_instance, exist_ok=True)
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(pasta_instance, "rotamais.db").replace("\\", "/")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "rotamais"
 
@@ -28,7 +30,6 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    # Registro dos Blueprints da API (JSON)
     app.register_blueprint(motorista_bp, url_prefix="/motoristas")
     app.register_blueprint(veiculo_bp, url_prefix="/veiculos")
     app.register_blueprint(corrida_bp, url_prefix="/corridas")

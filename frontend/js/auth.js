@@ -49,6 +49,16 @@ function headersAutenticados(extra = {}) {
     };
 }
 
+// Lê o corpo da resposta como JSON sem estourar erro se o servidor devolver HTML
+// (por exemplo, uma página de erro 500). Assim mostramos o problema real ao usuário.
+async function lerJsonSeguro(resposta) {
+    try {
+        return await resposta.json();
+    } catch (erro) {
+        return {};
+    }
+}
+
 // Verifica se a resposta indica sessão expirada/inválida; se sim, desloga e retorna true.
 async function tratarNaoAutenticado(resposta) {
     if (resposta.status === 401) {
