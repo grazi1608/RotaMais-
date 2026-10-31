@@ -1,7 +1,6 @@
-from datetime import datetime
-from flask import Blueprint, request, jsonify
-from flask.views import MethodView
+from flask import Blueprint, request
 
+from controllers.base_controller import BaseController
 from services.Gasto import (
     CriarGasto,
     BuscarGasto,
@@ -14,13 +13,7 @@ from utils.auth import login_required
 gasto_bp = Blueprint("gasto", __name__)
 
 
-def formatar_data_hora(data_hora_str):
-    if data_hora_str:
-        return datetime.fromisoformat(data_hora_str)
-    return None
-
-
-class GastoController(MethodView):
+class GastoController(BaseController):
     """Controller do recurso Gasto: os gastos sempre pertencem ao motorista
     autenticado (request.motorista_atual), nunca a um motorista_id enviado
     pelo cliente — evita que alguém registre gasto em nome de outro."""
@@ -31,65 +24,52 @@ class GastoController(MethodView):
         motorista_id = request.motorista_atual.id
 
         if id is None:
-            gastos = ListarGastosDoMotorista().executar(motorista_id)
-            return jsonify(gastos), 200
+            return self.responder(ListarGastosDoMotorista().executar(motorista_id))
 
         try:
             gasto = BuscarGasto().executar(id, motorista_id)
-            return jsonify(gasto.to_dict()), 200
+            return self.responder(gasto.to_dict())
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 404
+            return self.responder_erro(erro)
 
     def post(self):
-        dados = request.get_json()
-        motorista_id = request.motorista_atual.id
+        dados = self.dados_json()
 
         try:
             gasto = CriarGasto().executar(
-                tipo=dados["tipo"],
-                valor=dados["valor"],
-                motorista_id=motorista_id,
+                tipo=dados.get("tipo"),
+                valor=dados.get("valor"),
+                motorista_id=request.motorista_atual.id,
                 descricao=dados.get("descricao"),
                 veiculo_id=dados.get("veiculo_id"),
-                data=formatar_data_hora(dados.get("data")),
+                data=self.ler_data_hora(dados.get("data")),
             )
-            return jsonify(gasto.to_dict()), 201
-        except KeyError:
-            return jsonify({"erro": "Campos obrigatórios não informados."}), 400
+            return self.responder(gasto.to_dict(), 201)
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 400
+            return self.responder_erro(erro)
 
     def put(self, id):
-        dados = request.get_json()
-        motorista_id = request.motorista_atual.id
+        dados = self.dados_json()
 
         try:
             gasto = AtualizarGasto().executar(
                 id=id,
-                motorista_id=motorista_id,
-                tipo=dados["tipo"],
-                valor=dados["valor"],
+                motorista_id=request.motorista_atual.id,
+                tipo=dados.get("tipo"),
+                valor=dados.get("valor"),
                 descricao=dados.get("descricao"),
                 veiculo_id=dados.get("veiculo_id"),
-                data=formatar_data_hora(dados.get("data")),
+                data=self.ler_data_hora(dados.get("data")),
             )
-            return jsonify(gasto.to_dict()), 200
-        except KeyError:
-            return jsonify({"erro": "Campos obrigatórios não informados."}), 400
+            return self.responder(gasto.to_dict())
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 404
+            return self.responder_erro(erro)
 
     def delete(self, id):
-        motorista_id = request.motorista_atual.id
-
         try:
-            resultado = ExcluirGasto().executar(id, motorista_id)
-            return jsonify(resultado), 200
+            return self.responder(ExcluirGasto().executar(id, request.motorista_atual.id))
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 404
+            return self.responder_erro(erro)
 
 
-gasto_view = GastoController.as_view("gasto_api")
-gasto_bp.add_url_rule("", defaults={"id": None}, view_func=gasto_view, methods=["GET"])
-gasto_bp.add_url_rule("", view_func=gasto_view, methods=["POST"])
-gasto_bp.add_url_rule("/<int:id>", view_func=gasto_view, methods=["GET", "PUT", "DELETE"])
+GastoController.registrar_rotas(gasto_bp, "gasto_api")

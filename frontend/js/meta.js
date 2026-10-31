@@ -1,7 +1,7 @@
 exigirLogin();
 
-const API_METAS = "http://127.0.0.1:5000/metas";
-const API_MOTORISTAS = "http://127.0.0.1:5000/motoristas";
+const API_METAS = `${API_BASE}/metas`;
+const API_MOTORISTAS = `${API_BASE}/motoristas`;
 
 const formMeta = document.querySelector("#form-meta");
 const metaId = document.querySelector("#meta-id");

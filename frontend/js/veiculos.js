@@ -1,7 +1,7 @@
 exigirLogin();
 
-const API_VEICULOS = "http://127.0.0.1:5000/veiculos";
-const API_MOTORISTAS = "http://127.0.0.1:5000/motoristas";
+const API_VEICULOS = `${API_BASE}/veiculos`;
+const API_MOTORISTAS = `${API_BASE}/motoristas`;
 
 const formVeiculo = document.querySelector("#form-veiculo");
 const veiculoId = document.querySelector("#veiculo-id");

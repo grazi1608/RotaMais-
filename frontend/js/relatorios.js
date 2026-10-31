@@ -1,6 +1,6 @@
 exigirLogin();
 
-const API_RELATORIO_LUCRO = "http://127.0.0.1:5000/relatorios/lucro-por-motorista";
+const API_RELATORIO_LUCRO = `${API_BASE}/relatorios/lucro-por-motorista`;
 
 const tabelaRelatorio = document.querySelector("#tabela-relatorio");
 const botaoRecarregar = document.querySelector("#botao-recarregar");

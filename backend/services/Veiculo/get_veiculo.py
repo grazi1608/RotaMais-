@@ -1,4 +1,5 @@
 from models.veiculo import Veiculo
+from services.excecoes import RecursoNaoEncontrado
 
 
 class BuscarVeiculo:
@@ -8,6 +9,6 @@ class BuscarVeiculo:
         veiculo = Veiculo.buscar_por_id(id)
 
         if veiculo is None:
-            raise ValueError("Veículo não encontrado.")
+            raise RecursoNaoEncontrado("Veículo não encontrado.")
 
         return veiculo.to_dict()

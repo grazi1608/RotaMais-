@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from models import db
 from models.base import ModeloBase
 
@@ -6,37 +7,20 @@ from models.base import ModeloBase
 class Corrida(ModeloBase):
     __tablename__ = "corridas"
 
-    id = db.Column(db.Integer, primary_key=True)
-
-    data_hora = db.Column(
-        db.DateTime,
-        default=datetime.utcnow,
-        nullable=False
-    )
-
+    data_hora = db.Column(db.DateTime, nullable=False, default=datetime.now)
     valor = db.Column(db.Float, nullable=False)
     custo_estimado = db.Column(db.Float, nullable=False)
     lucro = db.Column(db.Float, nullable=False)
     distancia = db.Column(db.Float, nullable=False)
-
     motorista_id = db.Column(
-        db.Integer,
-        db.ForeignKey("motoristas.id"),
-        nullable=False
+        db.Integer, db.ForeignKey("motoristas.id", ondelete="CASCADE"), nullable=False
     )
     veiculo_id = db.Column(
-        db.Integer,
-        db.ForeignKey("veiculos.id"),
-        nullable=False
+        db.Integer, db.ForeignKey("veiculos.id", ondelete="CASCADE"), nullable=False
     )
-    motorista = db.relationship(
-        "Motorista",
-        back_populates="corridas"
-    )
-    veiculo = db.relationship(
-        "Veiculo",
-        back_populates="corridas"
-    )
+
+    motorista = db.relationship("Motorista", back_populates="corridas")
+    veiculo = db.relationship("Veiculo", back_populates="corridas")
 
     def __init__(
         self,
@@ -54,9 +38,7 @@ class Corrida(ModeloBase):
         self.distancia = distancia
         self.motorista_id = motorista_id
         self.veiculo_id = veiculo_id
-
-        if data_hora:
-            self.data_hora = data_hora
+        self.data_hora = data_hora or datetime.now()
 
     def to_dict(self):
         return {

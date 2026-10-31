@@ -1,48 +1,40 @@
-from datetime import datetime
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 
+from controllers.base_controller import BaseController
 from services.Auth import RegistrarUsuario, AutenticarUsuario, EncerrarSessao
 from utils.auth import login_required
 
 auth_bp = Blueprint("auth", __name__)
 
 
-def formatar_data(data_str):
-    if data_str:
-        return datetime.strptime(data_str, "%Y-%m-%d").date()
-    return None
-
-
-class AuthController:
+class AuthController(BaseController):
     """Controller de autenticação: recebe a requisição HTTP, interpreta os
     dados e delega a regra de negócio para o Service correspondente."""
 
     def registrar(self):
-        dados = request.get_json()
+        dados = self.dados_json()
 
         try:
             motorista = RegistrarUsuario().executar(
-                nome=dados["nome"],
-                cpf=dados["cpf"],
-                cnh=dados["cnh"],
-                email=dados["email"],
-                senha=dados["senha"],
+                nome=dados.get("nome"),
+                cpf=dados.get("cpf"),
+                cnh=dados.get("cnh"),
+                email=dados.get("email"),
+                senha=dados.get("senha"),
                 telefone=dados.get("telefone"),
-                data_nascimento=formatar_data(dados.get("data_nascimento")),
+                data_nascimento=self.ler_data(dados.get("data_nascimento")),
             )
 
-            return jsonify({
+            return self.responder({
                 "token": motorista.token,
                 "motorista": motorista.to_dict()
-            }), 201
+            }, 201)
 
-        except KeyError:
-            return jsonify({"erro": "Campos obrigatórios não informados."}), 400
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 400
+            return self.responder_erro(erro)
 
     def login(self):
-        dados = request.get_json()
+        dados = self.dados_json()
 
         try:
             motorista = AutenticarUsuario().executar(
@@ -50,22 +42,22 @@ class AuthController:
                 senha=dados.get("senha"),
             )
 
-            return jsonify({
+            return self.responder({
                 "token": motorista.token,
                 "motorista": motorista.to_dict()
-            }), 200
+            })
 
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 401
+            return self.responder({"erro": str(erro)}, 401)
 
     @login_required
     def logout(self):
         resultado = EncerrarSessao().executar(request.motorista_atual)
-        return jsonify(resultado), 200
+        return self.responder(resultado)
 
     @login_required
     def me(self):
-        return jsonify({"motorista": request.motorista_atual.to_dict()}), 200
+        return self.responder({"motorista": request.motorista_atual.to_dict()})
 
 
 auth_controller = AuthController()

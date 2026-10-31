@@ -1,4 +1,5 @@
 from models.corrida import Corrida
+from services.excecoes import RecursoNaoEncontrado
 
 
 class ExcluirCorrida:
@@ -8,7 +9,7 @@ class ExcluirCorrida:
         corrida = Corrida.buscar_por_id(id)
 
         if corrida is None:
-            raise ValueError("Corrida não encontrada.")
+            raise RecursoNaoEncontrado("Corrida não encontrada.")
 
         corrida.deletar()
 

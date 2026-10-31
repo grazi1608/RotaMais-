@@ -1,4 +1,5 @@
 from models.objetivo_cofrinho import ObjetivoCofrinho
+from services.excecoes import RecursoNaoEncontrado
 
 
 class BuscarObjetivoCofrinho:
@@ -8,6 +9,6 @@ class BuscarObjetivoCofrinho:
         objetivo = ObjetivoCofrinho.buscar_por_id(id)
 
         if objetivo is None or objetivo.motorista_id != motorista_id:
-            raise ValueError("Objetivo não encontrado.")
+            raise RecursoNaoEncontrado("Objetivo não encontrado.")
 
         return objetivo

@@ -1,4 +1,5 @@
 from models.corrida import Corrida
+from services.excecoes import RecursoNaoEncontrado
 
 
 class BuscarCorrida:
@@ -8,6 +9,6 @@ class BuscarCorrida:
         corrida = Corrida.buscar_por_id(id)
 
         if corrida is None:
-            raise ValueError("Corrida não encontrada.")
+            raise RecursoNaoEncontrado("Corrida não encontrada.")
 
         return corrida.to_dict()

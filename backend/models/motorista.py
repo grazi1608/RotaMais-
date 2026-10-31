@@ -1,52 +1,33 @@
-from datetime import date
-from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
+
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from models import db
 from models.base import ModeloBase
 from models.cadastro import Cadastro
 
+
 class Motorista(Cadastro, ModeloBase):
     __tablename__ = "motoristas"
 
-    id = db.Column(db.Integer, primary_key=True)
-
-    nome = db.Column(db.String(100), nullable=False)
-    cpf = db.Column(db.String(14), unique=True, nullable=False)
+    nome = db.Column(db.String(120), nullable=False)
+    cpf = db.Column(db.String(20), unique=True, nullable=False)
     cnh = db.Column(db.String(20), unique=True, nullable=False)
     telefone = db.Column(db.String(20))
-    email = db.Column(db.String(100), unique=True)
-    data_nascimento = db.Column(db.Date, nullable=True)
+    email = db.Column(db.String(120), unique=True)
+    data_nascimento = db.Column(db.Date)
     senha_hash = db.Column(db.String(255))
-    token = db.Column(db.String(64), unique=True, nullable=True)
+    token = db.Column(db.String(64), unique=True)
 
-    veiculos = db.relationship(
-        "Veiculo",
-        back_populates="motorista",
-        cascade="all, delete-orphan"
-    )
-    corridas = db.relationship(
-        "Corrida",
-        back_populates="motorista",
-        cascade="all, delete-orphan"
-    )
-    metas = db.relationship(
-        "Meta",
-        back_populates="motorista",
-        cascade="all, delete-orphan"
-    )
-    gastos = db.relationship(
-        "Gasto",
-        back_populates="motorista",
-        cascade="all, delete-orphan"
-    )
+    # Composição: ao excluir o motorista, os registros dele são excluídos junto.
+    veiculos = db.relationship("Veiculo", back_populates="motorista", cascade="all, delete-orphan")
+    corridas = db.relationship("Corrida", back_populates="motorista", cascade="all, delete-orphan")
+    metas = db.relationship("Meta", back_populates="motorista", cascade="all, delete-orphan")
+    gastos = db.relationship("Gasto", back_populates="motorista", cascade="all, delete-orphan")
     objetivos_cofrinho = db.relationship(
-        "ObjetivoCofrinho",
-        back_populates="motorista",
-        cascade="all, delete-orphan"
+        "ObjetivoCofrinho", back_populates="motorista", cascade="all, delete-orphan"
     )
 
-    
     def __init__(self, nome, cpf, cnh, telefone=None, email=None, data_nascimento=None):
         self.nome = nome
         self.cpf = cpf
@@ -54,6 +35,9 @@ class Motorista(Cadastro, ModeloBase):
         self.telefone = telefone
         self.email = email
         self.data_nascimento = data_nascimento
+        self.senha_hash = None
+        self.token = None
+        self.registrar_data_cadastro()
 
     def definir_senha(self, senha):
         """Gera e armazena o hash da senha (nunca a senha em texto puro)."""

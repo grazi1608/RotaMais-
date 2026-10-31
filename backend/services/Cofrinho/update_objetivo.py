@@ -1,3 +1,4 @@
+from services.validacoes import exigir_texto, exigir_numero_positivo
 from .get_objetivo import BuscarObjetivoCofrinho
 
 
@@ -7,10 +8,7 @@ class AtualizarObjetivoCofrinho:
     def executar(self, id, motorista_id, nome, valor_meta):
         objetivo = BuscarObjetivoCofrinho().executar(id, motorista_id)
 
-        if valor_meta is None or valor_meta <= 0:
-            raise ValueError("O valor da meta deve ser maior que zero.")
-
-        objetivo.nome = nome
-        objetivo.valor_meta = valor_meta
+        objetivo.nome = exigir_texto(nome, "Informe um nome para o objetivo.")
+        objetivo.valor_meta = exigir_numero_positivo(valor_meta, "O valor da meta deve ser maior que zero.")
 
         return objetivo.atualizar()

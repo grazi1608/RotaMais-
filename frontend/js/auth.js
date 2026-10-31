@@ -1,5 +1,10 @@
 // Funções compartilhadas de autenticação — usadas por todas as páginas.
-const API_BASE = "http://127.0.0.1:5000";
+// Endereço da API. Quando o site é aberto pelo próprio Flask (http://127.0.0.1:5000),
+// a API está na mesma origem. Se o HTML for aberto de outro jeito (arquivo local, outra
+// porta), usamos o endereço padrão do backend.
+const API_BASE = (window.location.protocol.startsWith("http") && window.location.port === "5000")
+    ? window.location.origin
+    : "http://127.0.0.1:5000";
 const CHAVE_TOKEN = "rotamais_token";
 const CHAVE_MOTORISTA = "rotamais_motorista";
 

@@ -1,35 +1,21 @@
 from datetime import date
+
 from models import db
 from models.base import ModeloBase
+
 
 class Meta(ModeloBase):
     __tablename__ = "metas"
 
-    id = db.Column(db.Integer, primary_key=True)
     valor_meta = db.Column(db.Float, nullable=False)
-
-    data_inicio = db.Column(
-        db.Date,
-        nullable=False,
-        default=date.today
-    )
-    data_fim = db.Column(
-        db.Date,
-        nullable=False
-    )
-    concluida = db.Column(
-        db.Boolean,
-        default=False
-    )
+    data_inicio = db.Column(db.Date, nullable=False, default=date.today)
+    data_fim = db.Column(db.Date, nullable=False)
+    concluida = db.Column(db.Boolean, nullable=False, default=False)
     motorista_id = db.Column(
-        db.Integer,
-        db.ForeignKey("motoristas.id"),
-        nullable=False
+        db.Integer, db.ForeignKey("motoristas.id", ondelete="CASCADE"), nullable=False
     )
-    motorista = db.relationship(
-        "Motorista",
-        back_populates="metas"
-    )
+
+    motorista = db.relationship("Motorista", back_populates="metas")
 
     def __init__(
         self,
@@ -42,10 +28,8 @@ class Meta(ModeloBase):
         self.valor_meta = valor_meta
         self.data_fim = data_fim
         self.motorista_id = motorista_id
-        self.concluida = concluida
-
-        if data_inicio:
-            self.data_inicio = data_inicio
+        self.concluida = bool(concluida)
+        self.data_inicio = data_inicio or date.today()
 
     def to_dict(self):
         return {

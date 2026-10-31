@@ -1,4 +1,6 @@
 from models.motorista import Motorista
+from repositories import MotoristaRepository
+from services.validacoes import exigir_texto
 
 
 class RegistrarUsuario:
@@ -8,17 +10,26 @@ class RegistrarUsuario:
     logá-lo automaticamente após o cadastro).
     """
 
+    def __init__(self):
+        self.repositorio = MotoristaRepository()
+
     def executar(self, nome, cpf, cnh, email, senha, telefone=None, data_nascimento=None):
+        nome = exigir_texto(nome, "Informe o nome.")
+        cpf = exigir_texto(cpf, "Informe o CPF.")
+        cnh = exigir_texto(cnh, "Informe a CNH.")
+        email = (email or "").strip().lower()
+        telefone = (telefone or "").strip() or None
+
         if not email or not senha:
             raise ValueError("E-mail e senha são obrigatórios.")
 
-        if Motorista.query.filter_by(email=email).first():
+        if self.repositorio.buscar_id_por_email(email):
             raise ValueError("Já existe uma conta com esse e-mail.")
 
-        if Motorista.query.filter_by(cpf=cpf).first():
+        if self.repositorio.buscar_id_por_cpf(cpf):
             raise ValueError("Já existe um motorista com esse CPF.")
 
-        if Motorista.query.filter_by(cnh=cnh).first():
+        if self.repositorio.buscar_id_por_cnh(cnh):
             raise ValueError("Já existe um motorista com essa CNH.")
 
         motorista = Motorista(

@@ -1,4 +1,5 @@
 from models.gasto import Gasto
+from services.excecoes import RecursoNaoEncontrado
 
 
 class BuscarGasto:
@@ -8,6 +9,6 @@ class BuscarGasto:
         gasto = Gasto.buscar_por_id(id)
 
         if gasto is None or gasto.motorista_id != motorista_id:
-            raise ValueError("Gasto não encontrado.")
+            raise RecursoNaoEncontrado("Gasto não encontrado.")
 
         return gasto

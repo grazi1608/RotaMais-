@@ -2,6 +2,7 @@ from functools import wraps
 from flask import request, jsonify
 
 from models.motorista import Motorista
+from repositories import MotoristaRepository
 
 
 def _extrair_token():
@@ -14,10 +15,10 @@ def _extrair_token():
 def login_required(f):
     """Decorator que exige um token válido (Authorization: Bearer <token>).
 
-    Usamos token em vez de sessão/cookie porque o frontend roda em outra
-    origem (porta) que o backend — cookies cross-origin exigem
-    configurações de SameSite/Secure frágeis entre navegadores diferentes,
-    enquanto um header Authorization funciona de forma simples e uniforme.
+    Usamos token em vez de sessão/cookie porque o frontend roda em outro
+    servidor (porta 5500) que a API (porta 5000) — cookies cross-origin
+    exigem configurações de SameSite/Secure frágeis entre navegadores
+    diferentes, enquanto um header Authorization funciona de forma simples.
     """
 
     @wraps(f)
@@ -27,7 +28,8 @@ def login_required(f):
         if not token:
             return jsonify({"erro": "Não autenticado."}), 401
 
-        motorista = Motorista.query.filter_by(token=token).first()
+        motorista_id = MotoristaRepository().buscar_id_por_token(token)
+        motorista = Motorista.buscar_por_id(motorista_id)
 
         if motorista is None:
             return jsonify({"erro": "Sessão inválida ou expirada."}), 401

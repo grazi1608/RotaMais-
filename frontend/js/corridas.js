@@ -1,8 +1,8 @@
 exigirLogin();
 
-const API_CORRIDAS = "http://127.0.0.1:5000/corridas";
-const API_MOTORISTAS = "http://127.0.0.1:5000/motoristas";
-const API_VEICULOS = "http://127.0.0.1:5000/veiculos";
+const API_CORRIDAS = `${API_BASE}/corridas`;
+const API_MOTORISTAS = `${API_BASE}/motoristas`;
+const API_VEICULOS = `${API_BASE}/veiculos`;
 
 const formCorrida = document.querySelector("#form-corrida");
 const corridaId = document.querySelector("#corrida-id");

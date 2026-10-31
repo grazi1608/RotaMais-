@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify
-from flask.views import MethodView
+from flask import Blueprint, request
 
+from controllers.base_controller import BaseController
 from services.Cofrinho import (
     CriarObjetivoCofrinho,
     BuscarObjetivoCofrinho,
@@ -14,7 +14,7 @@ from utils.auth import login_required
 cofrinho_bp = Blueprint("cofrinho", __name__)
 
 
-class CofrinhoController(MethodView):
+class CofrinhoController(BaseController):
     """Controller dos objetivos de cofrinho do motorista autenticado."""
 
     decorators = [login_required]
@@ -23,82 +23,69 @@ class CofrinhoController(MethodView):
         motorista_id = request.motorista_atual.id
 
         if id is None:
-            resultado = ListarObjetivosCofrinho().executar(motorista_id)
-            return jsonify(resultado), 200
+            return self.responder(ListarObjetivosCofrinho().executar(motorista_id))
 
         try:
             objetivo = BuscarObjetivoCofrinho().executar(id, motorista_id)
-            return jsonify(objetivo.to_dict()), 200
+            return self.responder(objetivo.to_dict())
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 404
+            return self.responder_erro(erro)
 
     def post(self):
-        dados = request.get_json()
-        motorista_id = request.motorista_atual.id
+        dados = self.dados_json()
 
         try:
             objetivo = CriarObjetivoCofrinho().executar(
-                nome=dados["nome"],
-                valor_meta=dados["valor_meta"],
-                motorista_id=motorista_id,
+                nome=dados.get("nome"),
+                valor_meta=dados.get("valor_meta"),
+                motorista_id=request.motorista_atual.id,
             )
-            return jsonify(objetivo.to_dict()), 201
-        except KeyError:
-            return jsonify({"erro": "Campos obrigatórios não informados."}), 400
+            return self.responder(objetivo.to_dict(), 201)
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 400
+            return self.responder_erro(erro)
 
     def put(self, id):
-        dados = request.get_json()
-        motorista_id = request.motorista_atual.id
+        dados = self.dados_json()
 
         try:
             objetivo = AtualizarObjetivoCofrinho().executar(
                 id=id,
-                motorista_id=motorista_id,
-                nome=dados["nome"],
-                valor_meta=dados["valor_meta"],
+                motorista_id=request.motorista_atual.id,
+                nome=dados.get("nome"),
+                valor_meta=dados.get("valor_meta"),
             )
-            return jsonify(objetivo.to_dict()), 200
-        except KeyError:
-            return jsonify({"erro": "Campos obrigatórios não informados."}), 400
+            return self.responder(objetivo.to_dict())
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 404
+            return self.responder_erro(erro)
 
     def delete(self, id):
-        motorista_id = request.motorista_atual.id
-
         try:
-            resultado = ExcluirObjetivoCofrinho().executar(id, motorista_id)
-            return jsonify(resultado), 200
+            resultado = ExcluirObjetivoCofrinho().executar(id, request.motorista_atual.id)
+            return self.responder(resultado)
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 404
+            return self.responder_erro(erro)
 
 
-class GuardarDinheiroController(MethodView):
-    """Controller da ação específica de 'guardar dinheiro' em um objetivo."""
+class GuardarDinheiroController(BaseController):
+    """Controller da ação específica de "guardar dinheiro" em um objetivo."""
 
     decorators = [login_required]
 
     def post(self, id):
-        dados = request.get_json()
-        motorista_id = request.motorista_atual.id
+        dados = self.dados_json()
 
         try:
             objetivo = GuardarDinheiroNoObjetivo().executar(
                 id=id,
-                motorista_id=motorista_id,
+                motorista_id=request.motorista_atual.id,
                 valor=dados.get("valor"),
             )
-            return jsonify(objetivo.to_dict()), 200
+            return self.responder(objetivo.to_dict())
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 400
+            return self.responder_erro(erro)
 
 
-cofrinho_view = CofrinhoController.as_view("cofrinho_api")
-cofrinho_bp.add_url_rule("", defaults={"id": None}, view_func=cofrinho_view, methods=["GET"])
-cofrinho_bp.add_url_rule("", view_func=cofrinho_view, methods=["POST"])
-cofrinho_bp.add_url_rule("/<int:id>", view_func=cofrinho_view, methods=["GET", "PUT", "DELETE"])
+CofrinhoController.registrar_rotas(cofrinho_bp, "cofrinho_api")
 
 guardar_view = GuardarDinheiroController.as_view("cofrinho_guardar_api")
 cofrinho_bp.add_url_rule("/<int:id>/guardar", view_func=guardar_view, methods=["POST"])

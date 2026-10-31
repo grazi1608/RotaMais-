@@ -41,7 +41,7 @@ async function entrar(evento) {
         salvarSessao(corpo.token, corpo.motorista);
         window.location.href = "../index.html";
     } catch (erro) {
-        mostrarMensagem("Erro de conexão com a API.", "erro");
+        mostrarMensagem(`Não foi possível falar com a API em ${API_BASE}. Confira se o backend está rodando (python backend/app.py) e abra o site em http://127.0.0.1:5000.`, "erro");
     }
 }
 

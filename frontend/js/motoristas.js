@@ -1,6 +1,6 @@
 exigirLogin();
 
-const API_URL = "http://127.0.0.1:5000/motoristas";
+const API_URL = `${API_BASE}/motoristas`;
 
 const formMotorista = document.querySelector("#form-motorista");
 const motoristaId = document.querySelector("#motorista-id");

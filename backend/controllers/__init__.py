@@ -7,7 +7,16 @@ from .auth_controller import auth_bp
 from .gasto_controller import gasto_bp
 from .cofrinho_controller import cofrinho_bp
 
-__all__ = [
-    "motorista_bp", "veiculo_bp", "corrida_bp", "meta_bp", "relatorio_bp",
-    "auth_bp", "gasto_bp", "cofrinho_bp",
+# (blueprint, prefixo da URL) — registrados no app.py
+TODOS_OS_BLUEPRINTS = [
+    (motorista_bp, "/motoristas"),
+    (veiculo_bp, "/veiculos"),
+    (corrida_bp, "/corridas"),
+    (meta_bp, "/metas"),
+    (relatorio_bp, "/relatorios"),
+    (auth_bp, "/auth"),
+    (gasto_bp, "/gastos"),
+    (cofrinho_bp, "/cofrinho"),
 ]
+
+__all__ = ["TODOS_OS_BLUEPRINTS"]

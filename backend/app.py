@@ -1,48 +1,83 @@
 import os
+import secrets
+from pathlib import Path
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_cors import CORS
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+from sqlalchemy.exc import SQLAlchemyError
 
+from controllers import TODOS_OS_BLUEPRINTS
 from models import db
 
-from controllers.motorista_controller import motorista_bp
-from controllers.veiculo_controller import veiculo_bp
-from controllers.corrida_controller import corrida_bp
-from controllers.meta_controller import meta_bp
-from controllers.relatorio_controller import relatorio_bp
-from controllers.auth_controller import auth_bp
-from controllers.gasto_controller import gasto_bp
-from controllers.cofrinho_controller import cofrinho_bp
+PASTA_BACKEND = Path(__file__).resolve().parent
+
+
+@event.listens_for(Engine, "connect")
+def _ativar_chaves_estrangeiras(conexao, _registro):
+    """No SQLite as chaves estrangeiras só valem se ativadas em cada conexão."""
+    if conexao.__class__.__module__.startswith("sqlite3"):
+        cursor = conexao.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON")
+        cursor.close()
+
+
+def carregar_chave_secreta():
+    """Chave secreta do Flask, lida do .env (SECRET_KEY). Se não estiver
+    configurada, usa uma chave aleatória só para esta execução."""
+    chave = os.getenv("SECRET_KEY", "")
+    if not chave or chave == "troque-por-uma-chave-aleatoria":
+        print("AVISO: SECRET_KEY não configurada no backend/.env. Usando uma chave temporária.")
+        return secrets.token_urlsafe(32)
+    return chave
+
+
+def endereco_do_banco():
+    """SQLite em backend/instance/rotamais.db, não importa de qual pasta o
+    "python app.py" foi executado. (ROTAMAIS_DB permite trocar o arquivo,
+    útil em testes; DATABASE_URL permite usar outro banco.)"""
+    url_configurada = os.getenv("DATABASE_URL")
+    if url_configurada:
+        return url_configurada
+
+    arquivo = Path(os.getenv("ROTAMAIS_DB") or PASTA_BACKEND / "instance" / "rotamais.db")
+    arquivo.parent.mkdir(parents=True, exist_ok=True)
+    return f"sqlite:///{arquivo.as_posix()}"
 
 
 def create_app():
+    load_dotenv(PASTA_BACKEND / ".env")
+
+    # A API roda sozinha (porta 5000); o frontend é servido por outro servidor
+    # (porta 5500) e consome a API por fetch — por isso o CORS liberado.
     app = Flask(__name__)
     CORS(app)
 
-    pasta_instance = os.path.join(os.path.abspath(os.path.dirname(__file__)), "instance")
-    os.makedirs(pasta_instance, exist_ok=True)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(pasta_instance, "rotamais.db").replace("\\", "/")
+    app.config["SQLALCHEMY_DATABASE_URI"] = endereco_do_banco()
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["SECRET_KEY"] = "rotamais"
+    app.config["SECRET_KEY"] = carregar_chave_secreta()
+    app.json.ensure_ascii = False
 
     db.init_app(app)
 
-    with app.app_context():
-        db.create_all()
+    # Registro dos Blueprints da API (JSON)
+    for blueprint, prefixo in TODOS_OS_BLUEPRINTS:
+        app.register_blueprint(blueprint, url_prefix=prefixo)
 
-    app.register_blueprint(motorista_bp, url_prefix="/motoristas")
-    app.register_blueprint(veiculo_bp, url_prefix="/veiculos")
-    app.register_blueprint(corrida_bp, url_prefix="/corridas")
-    app.register_blueprint(meta_bp, url_prefix="/metas")
-    app.register_blueprint(relatorio_bp, url_prefix="/relatorios")
-    app.register_blueprint(auth_bp, url_prefix="/auth")
-    app.register_blueprint(gasto_bp, url_prefix="/gastos")
-    app.register_blueprint(cofrinho_bp, url_prefix="/cofrinho")
+    # Tratamento central de erro de banco: a transação é desfeita e a API
+    # responde 500. Assim nenhum Controller precisa conhecer o db.session.
+    @app.errorhandler(SQLAlchemyError)
+    def erro_de_banco(erro):
+        db.session.rollback()
+        return jsonify({"erro": "Erro ao acessar o banco de dados."}), 500
 
     @app.get("/")
-    def home():
+    def api_info():
         return jsonify({
             "mensagem": "API do RotaMais (Flask + SQLAlchemy) funcionando.",
+            "frontend": "http://127.0.0.1:5500",
             "rotas": {
                 "motoristas": "/motoristas",
                 "veiculos": "/veiculos",
@@ -51,9 +86,13 @@ def create_app():
                 "relatorios": "/relatorios/lucro-por-motorista",
                 "auth": "/auth/registrar, /auth/login, /auth/logout, /auth/me",
                 "gastos": "/gastos",
-                "cofrinho": "/cofrinho",
+                "cofrinho": "/cofrinho, /cofrinho/<id>/guardar",
             },
         })
+
+    with app.app_context():
+        # Cria as tabelas das Models que ainda não existem (não apaga dados).
+        db.create_all()
 
     return app
 
@@ -61,4 +100,5 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    debug = os.getenv("FLASK_DEBUG", "True") == "True"
+    app.run(debug=debug, host="127.0.0.1", port=5000)

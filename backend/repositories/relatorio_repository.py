@@ -1,38 +1,25 @@
-from models import db
-from models.motorista import Motorista
-from models.corrida import Corrida
+from repositories.base_repository import BaseRepository
 
 
-class RelatorioRepository:
+class RelatorioRepository(BaseRepository):
     """Consultas especiais de relatório (agregações/agrupamentos) que não
     fazem sentido morar na Model nem no Service — apenas acesso a dados
     complexo, sem regra de negócio."""
 
     def lucro_por_motorista(self):
         """Agrupa as corridas por motorista e soma valor, custo e lucro."""
-        resultados = (
-            db.session.query(
-                Motorista.id,
-                Motorista.nome,
-                db.func.count(Corrida.id).label("total_corridas"),
-                db.func.coalesce(db.func.sum(Corrida.valor), 0).label("total_faturado"),
-                db.func.coalesce(db.func.sum(Corrida.custo_estimado), 0).label("total_custo"),
-                db.func.coalesce(db.func.sum(Corrida.lucro), 0).label("total_lucro"),
-            )
-            .outerjoin(Corrida, Corrida.motorista_id == Motorista.id)
-            .group_by(Motorista.id, Motorista.nome)
-            .order_by(db.func.coalesce(db.func.sum(Corrida.lucro), 0).desc())
-            .all()
+        return self._buscar_todos(
+            """
+            SELECT
+                m.id                               AS motorista_id,
+                m.nome                             AS motorista_nome,
+                COUNT(c.id)                        AS total_corridas,
+                COALESCE(SUM(c.valor), 0)          AS total_faturado,
+                COALESCE(SUM(c.custo_estimado), 0) AS total_custo,
+                COALESCE(SUM(c.lucro), 0)          AS total_lucro
+            FROM motoristas m
+            LEFT JOIN corridas c ON c.motorista_id = m.id
+            GROUP BY m.id, m.nome
+            ORDER BY total_lucro DESC
+            """
         )
-
-        return [
-            {
-                "motorista_id": linha.id,
-                "motorista_nome": linha.nome,
-                "total_corridas": linha.total_corridas,
-                "total_faturado": float(linha.total_faturado),
-                "total_custo": float(linha.total_custo),
-                "total_lucro": float(linha.total_lucro),
-            }
-            for linha in resultados
-        ]

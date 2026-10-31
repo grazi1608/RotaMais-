@@ -1,6 +1,6 @@
-from datetime import datetime
 from models.gasto import Gasto
 from models.veiculo import Veiculo
+from services.validacoes import exigir_numero_positivo
 
 
 class CriarGasto:
@@ -10,8 +10,7 @@ class CriarGasto:
         if tipo not in Gasto.TIPOS_VALIDOS:
             raise ValueError(f"Tipo de gasto inválido. Use um de: {', '.join(Gasto.TIPOS_VALIDOS)}.")
 
-        if valor is None or valor <= 0:
-            raise ValueError("O valor do gasto deve ser maior que zero.")
+        valor = exigir_numero_positivo(valor, "O valor do gasto deve ser maior que zero.")
 
         if veiculo_id is not None and Veiculo.buscar_por_id(veiculo_id) is None:
             raise ValueError("Veículo não encontrado.")
@@ -20,7 +19,7 @@ class CriarGasto:
             tipo=tipo,
             valor=valor,
             motorista_id=motorista_id,
-            descricao=descricao,
+            descricao=(descricao or "").strip() or None,
             veiculo_id=veiculo_id,
             data=data,
         )

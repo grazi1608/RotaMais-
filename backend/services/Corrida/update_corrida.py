@@ -1,6 +1,8 @@
 from models.corrida import Corrida
 from models.motorista import Motorista
 from models.veiculo import Veiculo
+from services.excecoes import RecursoNaoEncontrado
+from services.validacoes import exigir_numero_positivo
 
 
 class AtualizarCorrida:
@@ -9,10 +11,12 @@ class AtualizarCorrida:
     def executar(self, id, valor, distancia, motorista_id, veiculo_id, data_hora=None):
         corrida = Corrida.buscar_por_id(id)
         if corrida is None:
-            raise ValueError("Corrida não encontrada.")
+            raise RecursoNaoEncontrado("Corrida não encontrada.")
 
-        motorista = Motorista.buscar_por_id(motorista_id)
-        if motorista is None:
+        valor = exigir_numero_positivo(valor, "O valor da corrida deve ser maior que zero.")
+        distancia = exigir_numero_positivo(distancia, "A distância deve ser maior que zero.")
+
+        if Motorista.buscar_por_id(motorista_id) is None:
             raise ValueError("Motorista não encontrado.")
 
         veiculo = Veiculo.buscar_por_id(veiculo_id)

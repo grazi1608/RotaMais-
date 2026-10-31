@@ -1,14 +1,16 @@
 from models.motorista import Motorista
+from services.excecoes import RecursoNaoEncontrado
 
 
 class ExcluirMotorista:
-    """Caso de uso: excluir um motorista existente."""
+    """Caso de uso: excluir um motorista existente (veículos, corridas, metas,
+    gastos e objetivos dele saem junto)."""
 
     def executar(self, id):
         motorista = Motorista.buscar_por_id(id)
 
         if motorista is None:
-            raise ValueError("Motorista não encontrado.")
+            raise RecursoNaoEncontrado("Motorista não encontrado.")
 
         motorista.deletar()
 

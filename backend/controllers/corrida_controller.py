@@ -1,7 +1,6 @@
-from flask import Blueprint, request, jsonify
-from flask.views import MethodView
-from datetime import datetime
+from flask import Blueprint
 
+from controllers.base_controller import BaseController
 from services.Corrida import (
     CriarCorrida,
     BuscarCorrida,
@@ -14,14 +13,7 @@ from utils.auth import login_required
 corrida_bp = Blueprint("corrida", __name__)
 
 
-def formatar_data_hora(data_hora_str):
-    """Converte string ISO (ex: '2026-01-01T10:00:00') em datetime, se houver valor."""
-    if data_hora_str:
-        return datetime.fromisoformat(data_hora_str)
-    return None
-
-
-class CorridaController(MethodView):
+class CorridaController(BaseController):
     """Controller do recurso Corrida: recebe a requisição HTTP, interpreta
     os dados e delega a regra de negócio para o Service correspondente."""
 
@@ -29,58 +21,48 @@ class CorridaController(MethodView):
 
     def get(self, id=None):
         if id is None:
-            corridas = ListarCorridas().executar()
-            return jsonify(corridas), 200
+            return self.responder(ListarCorridas().executar())
 
         try:
-            corrida = BuscarCorrida().executar(id)
-            return jsonify(corrida), 200
+            return self.responder(BuscarCorrida().executar(id))
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 404
+            return self.responder_erro(erro)
 
     def post(self):
-        dados = request.get_json()
+        dados = self.dados_json()
 
         try:
             corrida = CriarCorrida().executar(
-                valor=dados["valor"],
-                distancia=dados["distancia"],
-                motorista_id=dados["motorista_id"],
-                veiculo_id=dados["veiculo_id"],
+                valor=dados.get("valor"),
+                distancia=dados.get("distancia"),
+                motorista_id=dados.get("motorista_id"),
+                veiculo_id=dados.get("veiculo_id"),
             )
-            return jsonify(corrida.to_dict()), 201
-        except KeyError:
-            return jsonify({"erro": "Campos obrigatórios não informados."}), 400
+            return self.responder(corrida.to_dict(), 201)
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 400
+            return self.responder_erro(erro)
 
     def put(self, id):
-        dados = request.get_json()
+        dados = self.dados_json()
 
         try:
             corrida = AtualizarCorrida().executar(
                 id=id,
-                data_hora=formatar_data_hora(dados.get("data_hora")),
-                valor=dados["valor"],
-                distancia=dados["distancia"],
-                motorista_id=dados["motorista_id"],
-                veiculo_id=dados["veiculo_id"],
+                data_hora=self.ler_data_hora(dados.get("data_hora")),
+                valor=dados.get("valor"),
+                distancia=dados.get("distancia"),
+                motorista_id=dados.get("motorista_id"),
+                veiculo_id=dados.get("veiculo_id"),
             )
-            return jsonify(corrida.to_dict()), 200
-        except KeyError:
-            return jsonify({"erro": "Campos obrigatórios não informados."}), 400
+            return self.responder(corrida.to_dict())
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 404
+            return self.responder_erro(erro)
 
     def delete(self, id):
         try:
-            resultado = ExcluirCorrida().executar(id)
-            return jsonify(resultado), 200
+            return self.responder(ExcluirCorrida().executar(id))
         except ValueError as erro:
-            return jsonify({"erro": str(erro)}), 404
+            return self.responder_erro(erro)
 
 
-corrida_view = CorridaController.as_view("corrida_api")
-corrida_bp.add_url_rule("", defaults={"id": None}, view_func=corrida_view, methods=["GET"])
-corrida_bp.add_url_rule("", view_func=corrida_view, methods=["POST"])
-corrida_bp.add_url_rule("/<int:id>", view_func=corrida_view, methods=["GET", "PUT", "DELETE"])
+CorridaController.registrar_rotas(corrida_bp, "corrida_api")

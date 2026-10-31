@@ -1,14 +1,17 @@
 from models.corrida import Corrida
 from models.motorista import Motorista
 from models.veiculo import Veiculo
+from services.validacoes import exigir_numero_positivo
 
 
 class CriarCorrida:
     """Caso de uso: registrar uma nova corrida, calculando custo e lucro."""
 
     def executar(self, valor, distancia, motorista_id, veiculo_id):
-        motorista = Motorista.buscar_por_id(motorista_id)
-        if motorista is None:
+        valor = exigir_numero_positivo(valor, "O valor da corrida deve ser maior que zero.")
+        distancia = exigir_numero_positivo(distancia, "A distância deve ser maior que zero.")
+
+        if Motorista.buscar_por_id(motorista_id) is None:
             raise ValueError("Motorista não encontrado.")
 
         veiculo = Veiculo.buscar_por_id(veiculo_id)

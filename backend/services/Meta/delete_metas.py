@@ -1,4 +1,5 @@
 from models.meta import Meta
+from services.excecoes import RecursoNaoEncontrado
 
 
 class ExcluirMeta:
@@ -7,7 +8,7 @@ class ExcluirMeta:
     def executar(self, id):
         meta = Meta.buscar_por_id(id)
         if meta is None:
-            raise ValueError("Meta não encontrada.")
+            raise RecursoNaoEncontrado("Meta não encontrada.")
 
         meta.deletar()
 

@@ -1,4 +1,5 @@
 from models.meta import Meta
+from services.excecoes import RecursoNaoEncontrado
 
 
 class BuscarMeta:
@@ -8,6 +9,6 @@ class BuscarMeta:
         meta = Meta.buscar_por_id(id)
 
         if meta is None:
-            raise ValueError("Meta não encontrada.")
+            raise RecursoNaoEncontrado("Meta não encontrada.")
 
         return meta
